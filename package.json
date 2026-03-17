@@ -1,0 +1,15 @@
+{
+  "name": "self-healing-web-app",
+  "version": "1.0.0",
+  "description": "A self-healing web application with CI/CD",
+  "main": "app/index.js",
+  "scripts": {
+    "start": "node app/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
