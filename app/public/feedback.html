@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Submitted - Self-Healing Web App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">🚀 Self-Healing App</h1>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="/about" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="/feedback" class="nav-link active">Feedback</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>📝 Feedback Submitted Successfully!</h1>
+            <p>Thank you for your valuable feedback.</p>
+        </header>
+
+        <main>
+            <section class="feedback-display">
+                <div class="success-message">
+                    <h2>✅ Your Feedback Has Been Received</h2>
+                    <p>We appreciate you taking the time to share your thoughts with us. Your feedback helps us improve our self-healing web application.</p>
+                </div>
+
+                <div class="feedback-details" id="feedbackDetails">
+                    <h3>📋 Submitted Information:</h3>
+                    <div class="feedback-item">
+                        <strong>Name:</strong> <span id="submittedName"></span>
+                    </div>
+                    <div class="feedback-item">
+                        <strong>Email:</strong> <span id="submittedEmail"></span>
+                    </div>
+                    <div class="feedback-item">
+                        <strong>Message:</strong>
+                        <div id="submittedMessage" class="message-content"></div>
+                    </div>
+                    <div class="feedback-item">
+                        <strong>Submitted At:</strong> <span id="submittedTime"></span>
+                    </div>
+                </div>
+
+                <div class="feedback-actions">
+                    <a href="/" class="action-btn primary-btn">🏠 Back to Home</a>
+                    <button onclick="window.history.back()" class="action-btn secondary-btn">⬅️ Go Back</button>
+                </div>
+
+                <div class="additional-info">
+                    <h3>🔄 What Happens Next?</h3>
+                    <ul>
+                        <li>Your feedback is logged in our system</li>
+                        <li>Our team reviews all submissions regularly</li>
+                        <li>We may contact you if we need clarification</li>
+                        <li>Thank you for helping us improve!</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <p>&copy; 2024 Self-Healing Web App. Built with ❤️ using modern web technologies.</p>
+                <div class="footer-links">
+                    <a href="/" class="footer-link">Home</a>
+                    <a href="/about" class="footer-link">About</a>
+                    <a href="https://github.com/your-repo/self-healing-app" class="footer-link">GitHub</a>
+                    <a href="mailto:support@selfhealingapp.com" class="footer-link">Support</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="feedback-script.js"></script>
+</body>
+</html>

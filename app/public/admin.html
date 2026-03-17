@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard | Self-Healing App</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .admin-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .feedback-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 10px;
+            margin-top: 20px;
+        }
+
+        .feedback-table th {
+            text-align: left;
+            padding: 15px;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .feedback-table tr {
+            background: rgba(255, 255, 255, 0.03);
+            transition: all 0.3s ease;
+        }
+
+        .feedback-table tr:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: scale(1.01);
+        }
+
+        .feedback-table td {
+            padding: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .feedback-table td:first-child {
+            border-left: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 15px 0 0 15px;
+        }
+
+        .feedback-table td:last-child {
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 0 15px 15px 0;
+        }
+
+        .login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .login-card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 400px;
+        }
+
+        .status-pill {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-resolved {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            margin-left: 10px;
+            transition: color 0.3s;
+        }
+
+        .action-btn:hover {
+            color: white;
+        }
+
+        .delete-btn:hover {
+            color: var(--danger-color);
+        }
+
+        /* Terminal Style Log */
+        .log-terminal {
+            background: #0d0d0d;
+            border-radius: 12px;
+            padding: 20px;
+            font-family: 'Courier New', Courier, monospace;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #333;
+            margin-bottom: 30px;
+        }
+
+        .log-entry {
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+            border-left: 3px solid transparent;
+            padding-left: 10px;
+        }
+
+        .log-info {
+            color: #888;
+            border-color: #444;
+        }
+
+        .log-success {
+            color: #10b981;
+            border-color: #10b981;
+        }
+
+        .log-warning {
+            color: #f59e0b;
+            border-color: #f59e0b;
+        }
+
+        .log-error {
+            color: #ef4444;
+            border-color: #ef4444;
+            animation: pulse 2s infinite;
+        }
+
+        .btn-danger-outline {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-danger-outline:hover {
+            background: #ef4444;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div id="loginOverlay" class="login-overlay">
+        <div class="login-card">
+            <h2 style="margin-bottom: 20px;">🛡️ Admin Login</h2>
+            <input type="password" id="adminPassword" placeholder="Enter Password" style="margin-bottom: 20px;">
+            <button class="btn" onclick="login()">Access Dashboard</button>
+            <p id="loginError" style="color: #ef4444; margin-top: 15px; display: none;">Invalid Password</p>
+        </div>
+    </div>
+
+    <div class="background-globes">
+        <div class="globe globe-1"></div>
+        <div class="globe globe-2"></div>
+    </div>
+
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">🚀 Admin Panel</h1>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="#" class="nav-link active">Feedbacks</a></li>
+                <li class="nav-item"><a href="javascript:logout()" class="nav-link">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="admin-container">
+        <div class="monitor-grid"
+            style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-bottom: 30px;">
+            <div class="card" style="padding: 20px;">
+                <h3>📈 Load Trend</h3>
+                <div style="height: 200px;"><canvas id="adminHealthChart"></canvas></div>
+            </div>
+            <div class="card" style="padding: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div class="stat-box" style="text-align: center;">
+                    <div style="color: var(--text-muted); font-size: 0.8rem;">UPTIME</div>
+                    <div id="adminUptime" style="font-size: 1.5rem; font-weight: 700;">-</div>
+                </div>
+                <div class="stat-box" style="text-align: center;">
+                    <div style="color: var(--text-muted); font-size: 0.8rem;">TOTAL REQS</div>
+                    <div id="adminRequests" style="font-size: 1.5rem; font-weight: 700;">-</div>
+                </div>
+                <div class="stat-box" style="text-align: center;">
+                    <div style="color: var(--text-muted); font-size: 0.8rem;">ACTIVE USERS</div>
+                    <div id="adminUsers" style="font-size: 1.5rem; font-weight: 700;">-</div>
+                </div>
+                <div class="stat-box" style="text-align: center;">
+                    <div style="color: var(--text-muted); font-size: 0.8rem;">HEALTH</div>
+                    <div id="adminHealth" style="font-size: 1.5rem; font-weight: 700; color: #10b981;">STABLE</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="dashboard-header">
+                <h2>📝 User Feedbacks</h2>
+                <div class="header-actions">
+                    <button class="btn-resolve" onclick="loadFeedbacks()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="feedback-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Message</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="feedbackList">
+                        <!-- Entries will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let password = localStorage.getItem('admin_pass');
+
+        if (password) {
+            document.getElementById('loginOverlay').style.display = 'none';
+            loadFeedbacks();
+        }
+
+        async function login() {
+            const input = document.getElementById('adminPassword').value;
+            // Verify by attempting to fetch
+            const success = await verifyToken(input);
+            if (success) {
+                password = input;
+                localStorage.setItem('admin_pass', password);
+                document.getElementById('loginOverlay').style.display = 'none';
+                loadFeedbacks();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('admin_pass');
+            location.reload();
+        }
+
+        async function verifyToken(token) {
+            try {
+                const response = await fetch('/api/feedbacks', {
+                    headers: { 'Authorization': token }
+                });
+                return response.ok;
+            } catch (e) { return false; }
+        }
+
+        async function loadFeedbacks() {
+            try {
+                const response = await fetch('/api/feedbacks', {
+                    headers: { 'Authorization': password }
+                });
+                if (!response.ok) throw new Error('Unauthorized');
+                const data = await response.json();
+
+                const list = document.getElementById('feedbackList');
+                list.innerHTML = data.reverse().map(f => `
+                    <tr>
+                        <td>
+                            <div style="font-weight: 700;">${f.name}</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">${f.email}</div>
+                        </td>
+                        <td style="max-width: 400px; font-size: 0.9rem;">${f.message}</td>
+                        <td style="font-size: 0.8rem;">${f.timestamp}</td>
+                        <td><span class="status-pill status-${f.status}">${f.status}</span></td>
+                        <td>
+                            <button class="action-btn delete-btn" onclick="deleteFeedback(${f.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (e) {
+                if (e.message === 'Unauthorized') logout();
+            }
+        }
+
+        async function deleteFeedback(id) {
+            if (!confirm('Delete this feedback?')) return;
+            try {
+                const response = await fetch(`/api/feedbacks/delete/${id}`, {
+                    method: 'POST',
+                    headers: { 'Authorization': password }
+                });
+                if (response.ok) loadFeedbacks();
+            } catch (e) { console.error(e); }
+        }
+
+        // Admin Stats Chart
+        let adminChart;
+        const adminData = { labels: [], datasets: [{ label: 'Load %', data: [], borderColor: '#3b82f6', tension: 0.4, fill: true, backgroundColor: 'rgba(59, 130, 246, 0.1)' }] };
+
+        function initAdminChart() {
+            const ctx = document.getElementById('adminHealthChart');
+            if (!ctx) return;
+            adminChart = new Chart(ctx, {
+                type: 'line',
+                data: adminData,
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, max: 100 }, x: { display: false } }, plugins: { legend: { display: false } } }
+            });
+        }
+
+        async function updateAdminStats() {
+            try {
+                const response = await fetch('/api/stats');
+                const data = await response.json();
+                document.getElementById('adminUptime').textContent = data.uptime;
+                document.getElementById('adminRequests').textContent = data.requests;
+                document.getElementById('adminUsers').textContent = data.users;
+
+                // Update Logs
+                if (data.events) {
+                    const logContainer = document.getElementById('logTerminal');
+                    const lastCount = logContainer.children.length;
+                    logContainer.innerHTML = data.events.map(e => `
+                        <div class="log-entry log-${e.type}">
+                            <span style="color: #555;">[${e.timestamp}]</span> ${e.message}
+                        </div>
+                    `).join('');
+                }
+
+                if (adminChart) {
+                    const now = new Date().toLocaleTimeString();
+                    adminData.labels.push(now);
+                    const load = Math.min(95, 20 + (data.users * 2) + Math.random() * 10);
+                    adminData.datasets[0].data.push(load);
+                    if (adminData.labels.length > 10) { adminData.labels.shift(); adminData.datasets[0].data.shift(); }
+                    adminChart.update();
+                    document.getElementById('adminHealth').textContent = load > 80 ? 'HIGH' : 'STABLE';
+                    document.getElementById('adminHealth').style.color = load > 80 ? '#ef4444' : '#10b981';
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        async function triggerCrash() {
+            if (!confirm('WARNING: This will force the production process to exit. Docker will restart it automatically according to the policy. Proceed?')) return;
+            try {
+                const response = await fetch('/api/admin/crash', {
+                    method: 'POST',
+                    headers: { 'Authorization': password }
+                });
+                const result = await response.json();
+                alert(result.message);
+
+                // Show offline status
+                document.getElementById('logStatus').textContent = '○ OFFLINE';
+                document.getElementById('logStatus').style.color = '#ef4444';
+            } catch (e) { console.log('System is now offline (Expected)'); }
+        }
+
+        initAdminChart();
+        setInterval(updateAdminStats, 3000);
+        updateAdminStats();
+    </script>
+</body>
+
+</html>

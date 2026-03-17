@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Healing Web App</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .hero-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            padding: 80px 0;
+            text-align: left;
+        }
+
+        .hero-content {
+            flex: 1;
+        }
+
+        .hero-image {
+            flex: 1;
+            position: relative;
+        }
+
+        .hero-image img {
+            width: 100%;
+            border-radius: 30px;
+            box-shadow: 0 0 50px rgba(59, 130, 246, 0.5);
+            animation: float 6s infinite ease-in-out;
+        }
+
+        .monitor-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .stat-mini {
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .stat-mini .label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-mini h3 {
+            font-size: 1.8rem;
+            margin: 5px 0;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        @media (max-width: 968px) {
+            .hero-section {
+                flex-direction: column;
+                text-align: center;
+                padding: 40px 0;
+            }
+
+            .monitor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <h1 class="nav-logo">🚀 Self-Healing App</h1>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="/" class="nav-link active">Home</a></li>
+                <li class="nav-item"><a href="/about" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="/feedback" class="nav-link">Feedback</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header class="hero-section">
+            <div class="hero-content">
+                <h1>🚀 Self-Healing Web Application</h1>
+                <p><span class="status-indicator"></span>Live & Running | Demonstrating modern DevOps practices with
+                    containerization and automation.</p>
+                <div style="display: flex; gap: 20px; margin-top: 30px;">
+                    <a href="#monitoring" class="btn" style="width: auto; padding: 15px 30px;">Live Monitor</a>
+                    <a href="/feedback" class="btn"
+                        style="width: auto; padding: 15px 30px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);">Report
+                        Issue</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="assets/hero_illustration.png" alt="Self-Healing System Illustration">
+            </div>
+        </header>
+
+        <section class="live-monitoring" id="monitoring">
+            <h2>📈 Real-Time System Health</h2>
+            <div class="monitor-grid">
+                <div class="chart-container card" style="padding: 30px;">
+                    <canvas id="healthChart"></canvas>
+                </div>
+                <div class="stats-mini-grid" style="display: flex; flex-direction: column; gap: 20px;">
+                    <div class="stat-mini card">
+                        <span class="label">Uptime</span>
+                        <h3 id="uptime">0h 0m 0s</h3>
+                    </div>
+                    <div class="stat-mini card">
+                        <span class="label">Total Requests</span>
+                        <h3 id="requests">0</h3>
+                    </div>
+                    <div class="stat-mini card">
+                        <span class="label">System Load</span>
+                        <h3 id="health">Stable</h3>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <main>
+            <section class="features">
+                <h2>✨ Features</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h3>🛡️ Self-Healing</h3>
+                        <p>Automatically recovers from crashes using Docker restart policies.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🐳 Containerized</h3>
+                        <p>Fully dockerized for consistent environments across development and production.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🔄 CI/CD Pipeline</h3>
+                        <p>Jenkins pipeline for automated testing and deployment.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>❤️ Health Monitoring</h3>
+                        <p>Built-in health check endpoints and monitoring scripts.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="feedback-form">
+                <h2>📝 Report an Issue</h2>
+                <form id="feedbackForm">
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message:</label>
+                        <textarea id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <button type="submit" class="submit-btn">Submit Feedback</button>
+                </form>
+                <div id="responseMessage"></div>
+            </section>
+
+            <section class="counter-section">
+                <h2>🔢 Counter Demo</h2>
+                <div class="counter-display">
+                    <div class="counter-value" id="counterValue">0</div>
+                    <div class="counter-buttons">
+                        <button class="counter-btn increment-btn" id="incrementBtn">+</button>
+                        <button class="counter-btn decrement-btn" id="decrementBtn">-</button>
+                        <button class="counter-btn reset-btn" id="resetBtn">Reset</button>
+                    </div>
+                </div>
+                <p class="counter-note">💡 <strong>Counter:</strong> Demonstrates state management and API interactions.
+                </p>
+            </section>
+
+            <section class="stats-section">
+                <h2>📊 Live Statistics</h2>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <h3 id="uptime">99.9%</h3>
+                        <p>Uptime</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="requests">1,247</h3>
+                        <p>Requests Served</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="users">89</h3>
+                        <p>Active Users</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3 id="health">🟢</h3>
+                        <p>System Health</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="testimonials-section">
+                <h2>💬 What Users Say</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">"This self-healing app is incredible! It recovered from a crash
+                            automatically without any intervention."</p>
+                        <p class="testimonial-author">- DevOps Engineer</p>
+                    </div>
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">"The containerization makes deployment so smooth. Zero downtime
+                            deployments are now possible."</p>
+                        <p class="testimonial-author">- System Administrator</p>
+                    </div>
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">"Great monitoring and health checks. I can see the system status in
+                            real-time."</p>
+                        <p class="testimonial-author">- IT Manager</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="contact-section">
+                <h2>📞 Get In Touch</h2>
+                <p>Have questions or need support? Reach out to us!</p>
+                <div class="contact-links">
+                    <a href="mailto:support@selfhealingapp.com" class="contact-link">
+                        📧 Email Support
+                    </a>
+                    <a href="https://github.com/your-repo/self-healing-app" class="contact-link">
+                        🐙 GitHub
+                    </a>
+                    <a href="/feedback" class="contact-link">
+                        💬 Feedback
+                    </a>
+                    <a href="/about" class="contact-link">
+                        ℹ️ About
+                    </a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <p>&copy; 2024 Self-Healing Web App. Built with ❤️ using modern web technologies.</p>
+                <div class="footer-links">
+                    <a href="/about" class="footer-link">About</a>
+                    <a href="/feedback" class="footer-link">Feedback</a>
+                    <a href="/admin" class="footer-link">Admin</a>
+                    <a href="https://github.com/your-repo/self-healing-app" class="footer-link">GitHub</a>
+                    <a href="mailto:support@selfhealingapp.com" class="footer-link">Support</a>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

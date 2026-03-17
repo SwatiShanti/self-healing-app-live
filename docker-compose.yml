@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  web-app:
+    build: .
+    container_name: self-healing-app
+    ports:
+      - "3000:3000"
+    
+    # Persist feedback data across restarts
+    volumes:
+      - ./app/data:/usr/src/app/data
+    
+    environment:
+      - PORT=3000
+      - ADMIN_PASSWORD=admin123
+    
+    # SYSTEM SELF-HEALING:
+    # If the container crashes or stops, Docker will automatically restart it.
+    restart: always
+    
+    # HEALTH CHECK MECHANISM:
+    # Docker ensures the app is actually responsive.
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    
+    # Resource limits (Best Practice)
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+
+  nginx:
+    image: nginx:alpine
+    container_name: production-gateway
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - web-app
+    restart: always
+
+networks:
+  default:
+    name: self-healing-network
