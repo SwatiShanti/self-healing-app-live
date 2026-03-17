@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: self-healing-web-app
+    env: node
+    rootDir: app
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.x
+      - key: ADMIN_PASSWORD
+        sync: false
